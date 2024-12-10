@@ -1,0 +1,186 @@
+openapi: 3.0.3
+info:
+  title: Title
+  description: Title
+  version: 1.0.0
+servers:
+  - url: 'https'
+paths:
+  /auth/signup:
+    post:
+      operationId: SignUp
+      summary: User registration
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: successful sign up
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWTToken"
+  /auth/signin:
+    post:
+      operationId: SignIn
+      summary: User login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: successful sign in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JWTToken"
+
+#  /courses:
+#    get:
+#      operationId: FindCourses
+#      parameters:
+#        - name: like
+#          in: query
+#          required: false
+#          schema:
+#            type: string
+#        - name: my
+#          in: query
+#          required: false
+#          schema:
+#            type: string
+#      responses:
+#        200:
+#          description: Courses
+#          content:
+#            application/json:
+#              schema:
+#                type: array
+#                items:
+#                  $ref: "#/components/schemas/Course"
+#
+#  /courses/{course_id}:
+#    get:
+#      description: Get course
+#      parameters:
+#        - name: course_id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#            format: uuid
+#      responses:
+#        200:
+#          description: Return Course
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Course"
+#
+#  /courses/{course_id}/invite:
+#    post:
+#      operationId: InviteInCourse
+#      parameters:
+#        - name: course_id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#            format: uuid
+#      responses:
+#        204:
+#          description: Invited into course
+#
+#  /topics/{topic_id}:
+#    get:
+#      operationId: GetTopic
+#      parameters:
+#        - name: topic_id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#            format: uuid
+#      responses:
+#        200:
+#          description: Return topic
+#          content:
+#            application/json:
+#              schema:
+#                $ref: "#/components/schemas/Topic"
+#    post:
+#      operationId: ViewedTopic
+#      parameters:
+#        - name: topic_id
+#          in: path
+#          required: true
+#          schema:
+#            type: string
+#            format: uuid
+#      responses:
+#        204:
+#          description: Mark topic is viewed
+
+components:
+  schemas:
+    JWTToken:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token
+    Course:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        elements:
+          type: array
+          items:
+            $ref: "#/components/schemas/CourseElement"
+    CourseElement:
+      type: object
+      properties:
+        element_type:
+          type: string
+          enum:
+            - topic
+            - test
+        element_id:
+          type: string
+          format: uuid
+    Topic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        body:
+          type: string
+          description: HTML page with css
+
+
