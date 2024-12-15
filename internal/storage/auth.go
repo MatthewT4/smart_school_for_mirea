@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -40,6 +41,9 @@ func (p *PgStorage) GetUserByUsername(ctx context.Context, username string) (mod
 	}
 	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[model.User])
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return model.User{}, &model.ErrNotFound{}
+		}
 		return model.User{}, fmt.Errorf("%s: %w", op, err)
 	}
 

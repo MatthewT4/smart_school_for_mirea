@@ -44,7 +44,7 @@ func (h *handlers) SignIn(ctx echo.Context) error {
 
 	token, err := h.core.SignIn(ctx.Request().Context(), request)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return convertErrorToResponse(err)
 	}
 
 	resp := api.JWTToken{Token: &token}

@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"time"
 
@@ -65,15 +64,18 @@ func (c *Core) SignIn(ctx context.Context, params model.SignInRequest) (token st
 
 	user, err := c.storage.GetUserByUsername(ctx, params.Email)
 	if err != nil {
+		if _, ok := err.(*model.ErrNotFound); ok {
+			return "", &model.ErrNotFound{BaseError: model.BaseError{Message: "invalid credential"}}
+		}
 		log.Error("failed to fetch user", err.Error())
 
-		return token, err
+		return token, &model.ErrInternal{BaseError: model.BaseError{Message: "Internal error"}}
 	}
 
 	if err = bcrypt.CompareHashAndPassword([]byte(user.HashPassword), []byte(params.Password)); err != nil {
 		log.Info("invalid password", err.Error())
 
-		return "", fmt.Errorf("invalid credential")
+		return "", &model.ErrNotFound{BaseError: model.BaseError{Message: "invalid credential"}}
 	}
 
 	token, err = jwt.NewToken(user, c.authSecretKey, time.Duration(c.authTTL)*time.Hour*24)

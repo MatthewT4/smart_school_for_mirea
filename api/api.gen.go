@@ -4,13 +4,58 @@
 package api
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
+	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
+
+// Defines values for CourseElementElementType.
+const (
+	CourseElementElementTypeTest  CourseElementElementType = "test"
+	CourseElementElementTypeTopic CourseElementElementType = "topic"
+)
+
+// Course defines model for Course.
+type Course struct {
+	Description *string             `json:"description,omitempty"`
+	Elements    *[]CourseElement    `json:"elements,omitempty"`
+	Id          *openapi_types.UUID `json:"id,omitempty"`
+	Name        *string             `json:"name,omitempty"`
+}
+
+// CourseElement defines model for CourseElement.
+type CourseElement struct {
+	ElementId   *openapi_types.UUID       `json:"element_id,omitempty"`
+	ElementType *CourseElementElementType `json:"element_type,omitempty"`
+}
+
+// CourseElementElementType defines model for CourseElement.ElementType.
+type CourseElementElementType string
+
+// CourseWithStatusInvited defines model for CourseWithStatusInvited.
+type CourseWithStatusInvited struct {
+	Description         *string             `json:"description,omitempty"`
+	Elements            *[]CourseElement    `json:"elements,omitempty"`
+	Id                  *openapi_types.UUID `json:"id,omitempty"`
+	Name                *string             `json:"name,omitempty"`
+	UserInvitedInCourse *bool               `json:"user_invited_in_course,omitempty"`
+}
 
 // JWTToken defines model for JWTToken.
 type JWTToken struct {
 	// Token JWT token
 	Token *string `json:"token,omitempty"`
+}
+
+// Topic defines model for Topic.
+type Topic struct {
+	// Body HTML page with css
+	Body  *string             `json:"body,omitempty"`
+	Id    *openapi_types.UUID `json:"id,omitempty"`
+	Title *string             `json:"title,omitempty"`
 }
 
 // SignInJSONBody defines parameters for SignIn.
@@ -23,6 +68,12 @@ type SignInJSONBody struct {
 type SignUpJSONBody struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+// FindCoursesParams defines parameters for FindCourses.
+type FindCoursesParams struct {
+	Like *string `form:"like,omitempty" json:"like,omitempty"`
+	My   *bool   `form:"my,omitempty" json:"my,omitempty"`
 }
 
 // SignInJSONRequestBody defines body for SignIn for application/json ContentType.
@@ -39,6 +90,21 @@ type ServerInterface interface {
 	// User registration
 	// (POST /auth/signup)
 	SignUp(ctx echo.Context) error
+
+	// (GET /courses)
+	FindCourses(ctx echo.Context, params FindCoursesParams) error
+
+	// (GET /courses/{course_id})
+	GetCourse(ctx echo.Context, courseId openapi_types.UUID) error
+
+	// (POST /courses/{course_id}/invite)
+	InviteInCourse(ctx echo.Context, courseId openapi_types.UUID) error
+
+	// (GET /topics/{topic_id})
+	GetTopic(ctx echo.Context, topicId openapi_types.UUID) error
+
+	// (POST /topics/{topic_id})
+	ViewedTopic(ctx echo.Context, topicId openapi_types.UUID) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -61,6 +127,95 @@ func (w *ServerInterfaceWrapper) SignUp(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.SignUp(ctx)
+	return err
+}
+
+// FindCourses converts echo context to params.
+func (w *ServerInterfaceWrapper) FindCourses(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params FindCoursesParams
+	// ------------- Optional query parameter "like" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "like", ctx.QueryParams(), &params.Like)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter like: %s", err))
+	}
+
+	// ------------- Optional query parameter "my" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "my", ctx.QueryParams(), &params.My)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter my: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.FindCourses(ctx, params)
+	return err
+}
+
+// GetCourse converts echo context to params.
+func (w *ServerInterfaceWrapper) GetCourse(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "course_id" -------------
+	var courseId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "course_id", ctx.Param("course_id"), &courseId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter course_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetCourse(ctx, courseId)
+	return err
+}
+
+// InviteInCourse converts echo context to params.
+func (w *ServerInterfaceWrapper) InviteInCourse(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "course_id" -------------
+	var courseId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "course_id", ctx.Param("course_id"), &courseId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter course_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.InviteInCourse(ctx, courseId)
+	return err
+}
+
+// GetTopic converts echo context to params.
+func (w *ServerInterfaceWrapper) GetTopic(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "topic_id" -------------
+	var topicId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "topic_id", ctx.Param("topic_id"), &topicId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter topic_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetTopic(ctx, topicId)
+	return err
+}
+
+// ViewedTopic converts echo context to params.
+func (w *ServerInterfaceWrapper) ViewedTopic(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "topic_id" -------------
+	var topicId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "topic_id", ctx.Param("topic_id"), &topicId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter topic_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ViewedTopic(ctx, topicId)
 	return err
 }
 
@@ -94,5 +249,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 	router.POST(baseURL+"/auth/signin", wrapper.SignIn)
 	router.POST(baseURL+"/auth/signup", wrapper.SignUp)
+	router.GET(baseURL+"/courses", wrapper.FindCourses)
+	router.GET(baseURL+"/courses/:course_id", wrapper.GetCourse)
+	router.POST(baseURL+"/courses/:course_id/invite", wrapper.InviteInCourse)
+	router.GET(baseURL+"/topics/:topic_id", wrapper.GetTopic)
+	router.POST(baseURL+"/topics/:topic_id", wrapper.ViewedTopic)
 
 }

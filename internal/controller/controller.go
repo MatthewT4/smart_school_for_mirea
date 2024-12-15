@@ -15,11 +15,13 @@ type Controller struct {
 	logger *slog.Logger
 }
 
-func NewController(core *core.Core, port uint16, logger *slog.Logger) *Controller {
+func NewController(core *core.Core, port uint16, authSecretKey string, logger *slog.Logger) *Controller {
 	e := echo.New()
 
-	h := newHandlers(core, logger)
+	h := newHandlers(core, authSecretKey, logger)
 	api.RegisterHandlers(e, h)
+
+	e.Use(h.AuthMiddleware)
 
 	return &Controller{
 		core:   core,

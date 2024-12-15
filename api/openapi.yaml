@@ -52,91 +52,92 @@ paths:
               schema:
                 $ref: "#/components/schemas/JWTToken"
 
-#  /courses:
-#    get:
-#      operationId: FindCourses
-#      parameters:
-#        - name: like
-#          in: query
-#          required: false
-#          schema:
-#            type: string
-#        - name: my
-#          in: query
-#          required: false
-#          schema:
-#            type: string
-#      responses:
-#        200:
-#          description: Courses
-#          content:
-#            application/json:
-#              schema:
-#                type: array
-#                items:
-#                  $ref: "#/components/schemas/Course"
-#
-#  /courses/{course_id}:
-#    get:
-#      description: Get course
-#      parameters:
-#        - name: course_id
-#          in: path
-#          required: true
-#          schema:
-#            type: string
-#            format: uuid
-#      responses:
-#        200:
-#          description: Return Course
-#          content:
-#            application/json:
-#              schema:
-#                $ref: "#/components/schemas/Course"
-#
-#  /courses/{course_id}/invite:
-#    post:
-#      operationId: InviteInCourse
-#      parameters:
-#        - name: course_id
-#          in: path
-#          required: true
-#          schema:
-#            type: string
-#            format: uuid
-#      responses:
-#        204:
-#          description: Invited into course
-#
-#  /topics/{topic_id}:
-#    get:
-#      operationId: GetTopic
-#      parameters:
-#        - name: topic_id
-#          in: path
-#          required: true
-#          schema:
-#            type: string
-#            format: uuid
-#      responses:
-#        200:
-#          description: Return topic
-#          content:
-#            application/json:
-#              schema:
-#                $ref: "#/components/schemas/Topic"
-#    post:
-#      operationId: ViewedTopic
-#      parameters:
-#        - name: topic_id
-#          in: path
-#          required: true
-#          schema:
-#            type: string
-#            format: uuid
-#      responses:
-#        204:
-#          description: Mark topic is viewed
+  /courses:
+    get:
+      operationId: FindCourses
+      parameters:
+        - name: like
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: my
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Courses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CourseWithStatusInvited"
+
+  /courses/{course_id}:
+    get:
+      operationId: GetCourse
+      description: Get course
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Return Course
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Course"
+
+  /courses/{course_id}/invite:
+    post:
+      operationId: InviteInCourse
+      parameters:
+        - name: course_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Invited into course
+
+  /topics/{topic_id}:
+    get:
+      operationId: GetTopic
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Return topic
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Topic"
+    post:
+      operationId: ViewedTopic
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: Mark topic is viewed
 
 components:
   schemas:
@@ -156,6 +157,22 @@ components:
           type: string
         description:
           type: string
+        elements:
+          type: array
+          items:
+            $ref: "#/components/schemas/CourseElement"
+    CourseWithStatusInvited:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        user_invited_in_course:
+          type: boolean
         elements:
           type: array
           items:

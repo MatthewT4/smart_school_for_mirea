@@ -8,13 +8,7 @@ import (
 type handlers struct {
 	core *core.Core
 
+	authSecretKey string
+
 	logger *slog.Logger
-}
-
-func newHandlers(core *core.Core, logger *slog.Logger) *handlers {
-	return &handlers{
-		core: core,
-
-		logger: logger,
-	}
 }

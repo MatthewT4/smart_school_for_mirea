@@ -8,7 +8,15 @@ func (e *BaseError) Error() string {
 	return e.Message
 }
 
+type ErrBadRequest struct {
+	BaseError
+}
+
 type ErrNotFound struct {
+	BaseError
+}
+
+type ErrInternal struct {
 	BaseError
 }
 

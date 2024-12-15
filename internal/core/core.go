@@ -2,8 +2,6 @@ package core
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"github.com/google/uuid"
 	"log/slog"
 	"smart_school_for_mirea/internal/model"
@@ -14,7 +12,12 @@ type Storage interface {
 	GetUserByUsername(ctx context.Context, username string) (model.User, error)
 	GetUserByID(ctx context.Context, id uuid.UUID) (model.User, error)
 
-	GetProduct(ctx context.Context, productID uuid.UUID) (model.Product, error)
+	FindCourses(ctx context.Context, invitedUserID *uuid.UUID, nameLike *string) ([]model.Course, error)
+	FindUserCourseIDs(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error)
+	GetCourse(ctx context.Context, courseID uuid.UUID) (model.Course, error)
+
+	GetTopic(ctx context.Context, topicID uuid.UUID) (model.Topic, error)
+	AddViewedTopicMark(ctx context.Context, topicID uuid.UUID, userID uuid.UUID) error
 }
 
 type Core struct {
@@ -35,15 +38,4 @@ func NewCore(storage Storage, authSecretKey string, authTTL int64, logger *slog.
 
 		logger: logger,
 	}
-}
-
-func (c *Core) GetProduct(ctx context.Context, productID uuid.UUID) (model.Product, error) {
-	product, err := c.storage.GetProduct(ctx, productID)
-	if err != nil {
-		if errors.Is(err, &model.ErrNotFound{}) {
-			return model.Product{}, err
-		}
-		return model.Product{}, fmt.Errorf("get product: %w", err)
-	}
-	return product, err
 }

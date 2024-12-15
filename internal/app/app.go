@@ -26,7 +26,7 @@ func NewApp(logger *slog.Logger) (*App, error) {
 	pgStorage := storage.NewPgStorage(config.DbURL)
 
 	core := appCore.NewCore(pgStorage, config.AuthSecretKey, config.AuthTTL, logger)
-	api := controller.NewController(core, config.ApiServerPort, logger)
+	api := controller.NewController(core, config.ApiServerPort, config.AuthSecretKey, logger)
 
 	return &App{
 		logger:  logger,
