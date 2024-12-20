@@ -27,7 +27,7 @@ func (p *PgStorage) GetTopic(ctx context.Context, topicID uuid.UUID) (model.Topi
 }
 
 func (p *PgStorage) AddViewedTopicMark(ctx context.Context, topicID uuid.UUID, userID uuid.UUID) error {
-	_, err := p.connections.Exec(ctx, queryAddTopicViewedRow, userID, topicID)
+	_, err := p.connections.Exec(ctx, execAddTopicViewedRow, userID, topicID)
 	if err != nil {
 		return fmt.Errorf("exec: %w", err)
 	}

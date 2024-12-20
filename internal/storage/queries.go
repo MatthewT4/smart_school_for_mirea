@@ -26,7 +26,7 @@ SELECT * FROM topic WHERE id = $1
 SELECT * FROM topic WHERE course_id = $1
 `
 
-	queryAddTopicViewedRow = `
+	execAddTopicViewedRow = `
 INSERT INTO viewed_topic (user_id, topic_id)
 VALUES ($1, $2)
 `
@@ -54,5 +54,9 @@ WHERE
 	($1::uuid[] IS NULL OR id = ANY($1))
 AND
 	($2::text IS NULL OR title ILIKE '%' || $2 || '%')
+`
+	execAddUserInCourse = `
+INSERT INTO user_invited_in_course(user_id, course_id)
+VALUES ($1, $2)
 `
 )

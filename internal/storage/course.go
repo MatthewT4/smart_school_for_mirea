@@ -75,3 +75,11 @@ func (p *PgStorage) FindUserCourseIDs(ctx context.Context, userID uuid.UUID) ([]
 	}
 	return userCourseIDs, nil
 }
+
+func (p *PgStorage) AddUserInCourse(ctx context.Context, userID uuid.UUID, courseID uuid.UUID) error {
+	_, err := p.connections.Exec(ctx, execAddUserInCourse, userID, courseID)
+	if err != nil {
+		return fmt.Errorf("exec: %w", err)
+	}
+	return nil
+}

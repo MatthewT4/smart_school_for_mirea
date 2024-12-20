@@ -44,3 +44,29 @@ func (c *Core) FindCourses(ctx context.Context, nameLike *string, isMyCourses *b
 	}
 	return courses, nil
 }
+
+func (c *Core) AddUserInCourse(ctx context.Context, userID, courseID uuid.UUID) error {
+	_, err := c.storage.GetCourse(ctx, courseID)
+	if err != nil {
+		if _, ok := err.(*model.ErrNotFound); ok {
+			return &model.ErrNotFound{BaseError: model.BaseError{Message: "Course not found"}}
+		}
+	}
+
+	userCourseIDs, err := c.storage.FindUserCourseIDs(ctx, userID)
+	if err != nil {
+		return &model.ErrInternal{}
+	}
+	for _, userCourseID := range userCourseIDs {
+		if courseID == userCourseID {
+			return nil
+		}
+	}
+
+	err = c.storage.AddUserInCourse(ctx, userID, courseID)
+	if err != nil {
+		c.logger.Error("fail add user to course", slog.Any("error", err))
+		return &model.ErrInternal{}
+	}
+	return nil
+}

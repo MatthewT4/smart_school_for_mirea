@@ -24,6 +24,6 @@ func (h *handlers) ViewedTopic(ctx echo.Context, topicId openapi_types.UUID) err
 	if err != nil {
 		return convertErrorToResponse(err)
 	}
-	ctx.Response().Status = http.StatusNoContent
-	return nil
+
+	return ctx.NoContent(http.StatusNoContent)
 }

@@ -28,8 +28,13 @@ func (h *handlers) GetCourse(ctx echo.Context, courseId openapi_types.UUID) erro
 }
 
 func (h *handlers) InviteInCourse(ctx echo.Context, courseId openapi_types.UUID) error {
-	//TODO implement me
-	panic("implement me")
+	userID := ctx.Get(userIDCtx).(uuid.UUID)
+	err := h.core.AddUserInCourse(ctx.Request().Context(), userID, courseId)
+	if err != nil {
+		return convertErrorToResponse(err)
+	}
+
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 func newHandlers(core *core.Core, authSecretKey string, logger *slog.Logger) *handlers {

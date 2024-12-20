@@ -15,6 +15,7 @@ type Storage interface {
 	FindCourses(ctx context.Context, invitedUserID *uuid.UUID, nameLike *string) ([]model.Course, error)
 	FindUserCourseIDs(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error)
 	GetCourse(ctx context.Context, courseID uuid.UUID) (model.Course, error)
+	AddUserInCourse(ctx context.Context, userID uuid.UUID, courseID uuid.UUID) error
 
 	GetTopic(ctx context.Context, topicID uuid.UUID) (model.Topic, error)
 	AddViewedTopicMark(ctx context.Context, topicID uuid.UUID, userID uuid.UUID) error
