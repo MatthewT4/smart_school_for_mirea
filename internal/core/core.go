@@ -19,6 +19,9 @@ type Storage interface {
 
 	GetTopic(ctx context.Context, topicID uuid.UUID) (model.Topic, error)
 	AddViewedTopicMark(ctx context.Context, topicID uuid.UUID, userID uuid.UUID) error
+
+	GetTestWithResult(ctx context.Context, testID uuid.UUID, userID uuid.UUID) (model.TestEntity, error)
+	ApplyTestResult(ctx context.Context, userID uuid.UUID, test model.TestEntity) error
 }
 
 type Core struct {

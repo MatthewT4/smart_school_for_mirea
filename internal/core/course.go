@@ -7,10 +7,21 @@ import (
 	"smart_school_for_mirea/internal/model"
 )
 
-func (c *Core) GetCourse(ctx context.Context, courseID uuid.UUID) (model.Course, error) {
+func (c *Core) GetCourse(ctx context.Context, courseID uuid.UUID, userID uuid.UUID) (model.Course, error) {
 	course, err := c.storage.GetCourse(ctx, courseID)
 	if err != nil {
 		return model.Course{}, err
+	}
+
+	course.Tests = make([]model.TestEntity, 0)
+	for _, element := range course.Elements {
+		if element.ElementType == "test" {
+			test, err := c.storage.GetTestWithResult(ctx, element.ElementID, userID)
+			if err != nil {
+				return model.Course{}, err
+			}
+			course.Tests = append(course.Tests, test)
+		}
 	}
 	return course, nil
 }

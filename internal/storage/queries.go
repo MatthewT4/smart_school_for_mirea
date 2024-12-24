@@ -59,4 +59,35 @@ AND
 INSERT INTO user_invited_in_course(user_id, course_id)
 VALUES ($1, $2)
 `
+
+	queryGetTestInfo = `
+SELECT * 
+FROM test
+WHERE id = $1
+`
+	queryGetTestElementsInfo = `
+SELECT * 
+FROM test_element
+WHERE test_id = $1
+`
+
+	queryGetTestResult = `
+SELECT * 
+FROM test_result
+WHERE test_id = $1 and user_id = $2
+`
+	queryGetTestElementResults = `
+SELECT * 
+FROM test_element_result
+WHERE test_result_id = $1
+`
+
+	execAddTestResult = `
+INSERT INTO test_result (id, test_id, user_id, count_correct_answers, count_answers)
+VALUES ($1, $2, $3, $4, $5)
+`
+	execAddTestElementResult = `
+INSERT INTO test_element_result (id, test_result_id, element_id, user_answer, score)
+VALUES ($1, $2, $3, $4, $5)
+`
 )

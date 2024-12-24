@@ -100,6 +100,12 @@ type ServerInterface interface {
 	// (POST /courses/{course_id}/invite)
 	InviteInCourse(ctx echo.Context, courseId openapi_types.UUID) error
 
+	// (GET /tests/{test_id})
+	GetTest(ctx echo.Context, testId openapi_types.UUID) error
+
+	// (POST /tests/{test_id})
+	ApplyTest(ctx echo.Context, testId openapi_types.UUID) error
+
 	// (GET /topics/{topic_id})
 	GetTopic(ctx echo.Context, topicId openapi_types.UUID) error
 
@@ -187,6 +193,38 @@ func (w *ServerInterfaceWrapper) InviteInCourse(ctx echo.Context) error {
 	return err
 }
 
+// GetTest converts echo context to params.
+func (w *ServerInterfaceWrapper) GetTest(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "test_id" -------------
+	var testId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "test_id", ctx.Param("test_id"), &testId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter test_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetTest(ctx, testId)
+	return err
+}
+
+// ApplyTest converts echo context to params.
+func (w *ServerInterfaceWrapper) ApplyTest(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "test_id" -------------
+	var testId openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "test_id", ctx.Param("test_id"), &testId, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter test_id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.ApplyTest(ctx, testId)
+	return err
+}
+
 // GetTopic converts echo context to params.
 func (w *ServerInterfaceWrapper) GetTopic(ctx echo.Context) error {
 	var err error
@@ -252,6 +290,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/courses", wrapper.FindCourses)
 	router.GET(baseURL+"/courses/:course_id", wrapper.GetCourse)
 	router.POST(baseURL+"/courses/:course_id/invite", wrapper.InviteInCourse)
+	router.GET(baseURL+"/tests/:test_id", wrapper.GetTest)
+	router.POST(baseURL+"/tests/:test_id", wrapper.ApplyTest)
 	router.GET(baseURL+"/topics/:topic_id", wrapper.GetTopic)
 	router.POST(baseURL+"/topics/:topic_id", wrapper.ViewedTopic)
 

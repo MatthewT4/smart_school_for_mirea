@@ -20,7 +20,8 @@ func (h *handlers) FindCourses(ctx echo.Context, params api.FindCoursesParams) e
 }
 
 func (h *handlers) GetCourse(ctx echo.Context, courseId openapi_types.UUID) error {
-	course, err := h.core.GetCourse(ctx.Request().Context(), courseId)
+	userID := ctx.Get(userIDCtx).(uuid.UUID)
+	course, err := h.core.GetCourse(ctx.Request().Context(), courseId, userID)
 	if err != nil {
 		return convertErrorToResponse(err)
 	}

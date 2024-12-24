@@ -138,6 +138,31 @@ paths:
       responses:
         204:
           description: Mark topic is viewed
+  /tests/{test_id}:
+    get:
+      operationId: GetTest
+      parameters:
+        - name: test_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Return test with result, if it exist
+    post:
+      operationId: ApplyTest
+      parameters:
+        - name: test_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        201:
+          description: OK
 
 components:
   schemas:
@@ -199,5 +224,3 @@ components:
         body:
           type: string
           description: HTML page with css
-
-
